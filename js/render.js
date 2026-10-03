@@ -21,7 +21,7 @@ const R = {
     this.zoom = clamp(Math.min(this.w / (22 * TS), this.h / (13 * TS)), .6, 2.2);
     if (this.w < 700) this.zoom = clamp(Math.max(this.zoom, Math.min(this.w, this.h) / (13 * TS)), .6, 1.6);
     this.lc.width = Math.ceil(this.w / 2); this.lc.height = Math.ceil(this.h / 2);
-    const s = clamp(Math.ceil(this.dpr * this.zoom * 2) / 2, 1, 1.5);
+    const s = clamp(Math.ceil(this.dpr * this.zoom * 2) / 2, 1, 2.5);
     if (s !== this.chunkScale) { this.chunkScale = s; World.chunkCache.clear(); }
     // vignette
     this.vig = document.createElement('canvas'); this.vig.width = 256; this.vig.height = 256;
@@ -72,7 +72,8 @@ const R = {
         if (!World.chunkCache.has(key)) { World.chunkCache.set(key, renderChunk(cx, cy, this.chunkScale)); break outer; }
       }
     }
-    while (World.chunkCache.size > 40) { const k = World.chunkCache.keys().next().value; if (used.has(k)) break; World.chunkCache.delete(k); }
+    const maxChunks = this.chunkScale > 2 ? 24 : this.chunkScale > 1.5 ? 32 : 40;
+    while (World.chunkCache.size > maxChunks) { const k = World.chunkCache.keys().next().value; if (used.has(k)) break; World.chunkCache.delete(k); }
 
     // drawables
     const t = Game.time;
@@ -105,6 +106,7 @@ const R = {
       else if (k === 7) drawDog(g, o, t);
       else if (k === 8) this.drawPlayer(g, o, t, dt);
     }
+    if (Game.state === 'play' && !Game.paused) Guide.drawWorld(g, t);
     // particles
     for (const q of Game.particles) { g.globalAlpha = clamp(q.life / q.max, 0, 1); g.fillStyle = q.col; g.fillRect(q.x - q.size / 2, q.y - q.size / 2, q.size, q.size); }
     g.globalAlpha = 1;
@@ -116,7 +118,7 @@ const R = {
     Game.darkness = S ? computeDarkness() : 0;
     if (S && S.weather === 'rain') this.drawRain(g, dt);
     if (Game.darkness > .01) this.drawLights(g, camX, camY, t);
-    if (Game.state === 'play') this.drawPrompt(g);
+    if (Game.state === 'play') { this.drawPrompt(g); Guide.drawScreen(g, this.w, this.h); }
     // floaters (screen space for crisp text)
     g.textAlign = 'center'; g.font = 'bold 15px system-ui, sans-serif';
     for (const f of Game.floaters) {
@@ -249,23 +251,33 @@ const R = {
   drawPrompt(g) {
     const tg = Game.target; if (!tg || Game.paused || Game.action) return;
     if (tg.kind === 'node' && Game.time - (Game.lastLootT || -9) < 1.8 && nodeLooted(tg.node)) return;
-    const [txt, bad] = promptFor(tg);
+    let [txt, bad] = promptFor(tg);
     if (!txt) return;
+    const key = txt.startsWith(KEY_MARK); if (key) txt = txt.slice(1);
     const [sx, sy] = this.toScreen(tg.x, tg.y - 44);
-    g.font = 'bold 13px system-ui, sans-serif'; g.textAlign = 'center';
-    const w = g.measureText(txt).width + 18;
+    g.font = 'bold 13px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const kw = key ? 30 : 0;
+    const w = g.measureText(txt).width + 18 + kw;
     g.fillStyle = bad ? 'rgba(90,20,20,.88)' : 'rgba(18,20,26,.85)';
-    roundRect(g, sx - w / 2, sy - 16, w, 24, 7); g.fill();
+    roundRect(g, sx - w / 2, sy - 16, w, 28, 8); g.fill();
     g.strokeStyle = bad ? 'rgba(255,110,110,.6)' : 'rgba(245,197,66,.55)'; g.lineWidth = 1; g.stroke();
-    g.fillStyle = bad ? '#ffb0b0' : '#fff'; g.fillText(txt, sx, sy + 1);
+    if (key) {
+      const kx = sx - w / 2 + 18;
+      if (Input.isTouch) { g.font = '16px system-ui'; g.fillText('✋', kx, sy - 1); }
+      else { g.save(); g.scale(.8, .8); g.font = 'bold 15px system-ui, sans-serif'; drawKeycap(g, kx / .8, (sy - 2) / .8, keyLabel('KeyE'), 28); g.restore(); }
+      g.font = 'bold 13px system-ui, sans-serif';
+    }
+    g.fillStyle = bad ? '#ffb0b0' : '#fff'; g.fillText(txt, sx + kw / 2, sy - 1);
+    g.textBaseline = 'alphabetic';
   },
 };
 
+const KEY_MARK = '\u2063';
 function roundRect(g, x, y, w, h, r) {
   g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
 }
 function promptFor(tg) {
-  const E = Input.isTouch ? '✋ ' : '[E] ';
+  const E = KEY_MARK; // drawn as a keycap (or a hand on touch) by drawPrompt
   switch (tg.kind) {
     case 'node': {
       const n = tg.node, d = NODES[n.type];

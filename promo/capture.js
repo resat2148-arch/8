@@ -35,6 +35,7 @@ window.__setup = function (lang) {
   S.p.hunger = 72; S.p.thirst = 64; S.p.energy = 81;
   S.weather = 'clear'; S.event = null; clearDumpNode();
   S.collection = { coin: 1, duck: 1, comic: 1, robot: 1, vinyl: 1, medal: 1 };
+  Object.assign(S.flags, { noGuide: 1, tutMove: 1, tutRun: 1, tutAtk: 1 });
 };
 window.__zoom = function (z, cs) { R.zoom = z; R.chunkScale = cs; World.chunkCache.clear(); };
 const setTime = h => { S.totalMin = Math.floor(S.totalMin / 1440) * 1440 + Math.round(h * 60); };

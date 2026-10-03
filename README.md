@@ -44,9 +44,11 @@ python3 -m http.server 8000
 | Attack | Space / F / click | 👊 |
 | Sprint | Shift | 🏃 (hold) |
 | Eat / drink / bandage / energy | 1 / 2 / 3 / 4 | Quick bar |
-| Bag / Skills / Journal / Map / Menu | I / K / J / M / Esc | Menu buttons |
+| Bag / Skills / Journal / Map / Menu | I / K / J / M / P | Menu buttons |
 
-English and Turkish (auto-detected, switchable in the menu).
+English and Turkish (auto-detected, switchable in the menu). Key hints follow the player's keyboard layout (e.g. ZQSD on AZERTY).
+
+New players land straight in gameplay. Onboarding is in-world (`js/guide.js`): an arrow to the current objective (routed through the base exits), keycap overlays for move/attack/sprint and pulsing quick-bar slots. It can be skipped from the quest tracker or toggled in the menu.
 
 ## CrazyGames SDK
 

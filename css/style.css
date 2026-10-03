@@ -110,7 +110,7 @@ body.touch #quick { left: 50%; transform: translateX(-50%); }
 .btn:active:not([disabled]) { transform: scale(.96); }
 .btn.primary { background: linear-gradient(180deg, #f5b33a, #d98a14); color: #1b1305; border-color: #f5c542; }
 .btn.primary:hover:not([disabled]) { background: linear-gradient(180deg, #ffc24a, #e5961c); }
-.btn.ad { background: linear-gradient(180deg, #5a4ad0, #3d2fa6); border-color: #8a7aff; color: #fff; width: 100%; margin: 6px 0; }
+.btn.ad { background: #3d3577; border-color: #6a5fc0; color: #e6e2ff; margin: 6px auto; display: block; }
 .btn[disabled] { opacity: .45; cursor: default; }
 .btn.sm { padding: 5px 9px; font-size: 12px; }
 .btn.big { padding: 12px 22px; font-size: 17px; }
@@ -235,3 +235,8 @@ h4 { margin: 14px 0 6px; font-size: 14px; color: #d8d3c8; }
   body.touch #menu { top: auto; bottom: 6px; left: 10px; right: auto; flex-direction: row; }
   body.touch #quick { left: auto; right: 50%; transform: translateX(50%); }
 }
+
+.tq .skip { pointer-events: auto; margin-left: 8px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #ddd; border-radius: 6px; font-size: 11px; padding: 1px 7px; }
+.qs.pulse { border-color: var(--acc2); animation: qpulse .9s ease-in-out infinite alternate; }
+@keyframes qpulse { from { box-shadow: 0 0 0 rgba(245,197,66,0); transform: scale(1); } to { box-shadow: 0 0 14px rgba(245,197,66,.9); transform: scale(1.08); } }
+#touch #tAct.ready { background: rgba(245,166,35,.35); animation: qpulse .8s ease-in-out infinite alternate; }

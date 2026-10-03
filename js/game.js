@@ -127,6 +127,7 @@ function startGame(state) {
   Game.player = { x: S.p.x, y: S.p.y, face: Math.PI / 2, walkT: 0, moving: false };
   if (isSolid(Math.floor(S.p.x / TS), Math.floor(S.p.y / TS))) { Game.player.x = BASE_SPAWN.x; Game.player.y = BASE_SPAWN.y; }
   Game.dogs = []; Game.particles = []; Game.floaters = []; Game.action = null; Game.dead = false;
+  Guide.reset();
   Game.explored = new Uint8Array(48 * 48);
   if (S.explored && S.explored.length === 48 * 48) for (let i = 0; i < 48 * 48; i++) Game.explored[i] = S.explored.charCodeAt(i) === 49 ? 1 : 0;
   Game.curRegion = regionAt((Game.player.x / TS) | 0, (Game.player.y / TS) | 0) || 'center';
@@ -817,7 +818,6 @@ function updateDogs(dt) {
         S.p.hp -= dmg; Game.hurtT = .4; Sfx.play('hurt');
         floater(p.x, p.y - 30, '-' + Math.round(dmg), '#ff6060');
         burst(p.x, p.y, '#c33', 8, 80);
-        hint('dogs', t('hintDogs'), 40);
       }
     } else {
       spd = 45;
@@ -883,6 +883,7 @@ function update(dt) {
   if (Input.consume('attack')) attack();
   for (let i = 0; i < 4; i++) if (Input.consume('quick' + i)) quickUse(i);
   updateAction(dt);
+  Guide.update(dt);
   Game.attackT -= dt; Game.swingT -= dt; Game.hurtT -= dt;
   // --- time & survival ---
   const gm = dt * MIN_PER_SEC;

@@ -38,6 +38,7 @@ Features:
 - 20 rare collectibles in 5 sets, each set gives a permanent bonus
 - Skill perks, a 33-step quest line and big life goals, up to founding your own recycling company
 - Progress saves automatically, and machines keep working while you are away
+- No tutorial screens: a guide arrow and key hints teach you while you play
 
 ## Controls (EN)
 
@@ -46,7 +47,8 @@ Features:
 - Attack: Space or left click
 - Sprint: Shift
 - Eat / drink / bandage / energy drink: 1 / 2 / 3 / 4
-- Backpack: I · Skills: K · Journal: J · Map: M · Menu: Esc
+- Backpack: I · Skills: K · Journal: J · Map: M · Menu: P
+- Key labels follow the player's keyboard layout (e.g. ZQSD on AZERTY)
 - Mobile: drag on the left side to move, ✋ to search, 👊 to attack, 🏃 to sprint
 
 ---
@@ -81,7 +83,7 @@ Hayatta kalmak gerçek bir mücadele: açlığını, susuzluğunu ve enerjini ta
 - Saldırı: Boşluk veya sol tık
 - Koş: Shift
 - Ye / iç / bandaj / enerji içeceği: 1 / 2 / 3 / 4
-- Çanta: I · Yetenekler: K · Günlük: J · Harita: M · Menü: Esc
+- Çanta: I · Yetenekler: K · Günlük: J · Harita: M · Menü: P
 - Mobil: hareket için sol tarafta sürükle, ✋ ara, 👊 saldır, 🏃 koş
 
 ---

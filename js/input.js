@@ -1,10 +1,12 @@
 'use strict';
 // ---------- Keyboard + touch input ----------
 const Input = {
-  keys: {}, pressed: {}, isTouch: false,
+  keys: {}, pressed: {}, isTouch: false, layout: null,
   joy: { id: null, ox: 0, oy: 0, x: 0, y: 0 }, touchSprint: false,
 
   init() {
+    // show key labels in the player's own keyboard layout (e.g. ZQSD on AZERTY); bindings use physical keys
+    try { if (navigator.keyboard && navigator.keyboard.getLayoutMap) navigator.keyboard.getLayoutMap().then(m => { this.layout = m; }).catch(() => { }); } catch (e) { }
     this.isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && matchMedia('(pointer: coarse)').matches);
     window.addEventListener('keydown', e => {
       Sfx.init();

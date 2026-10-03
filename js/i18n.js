@@ -3,17 +3,15 @@
 const STR = {
   en: {
     subtitle: 'Survivor', tagline: 'The city throws everything away. You pick it back up. Scavenge, recycle, craft and survive on your own — one dumpster at a time.',
-    continue: 'Continue', newGame: 'New Game', howTo: 'How to Play', dayN: 'Day {0}', titleFoot: 'WASD / Arrows · E interact · Space attack · Shift sprint',
+    continue: 'Continue', newGame: 'New Game', howTo: 'How to Play', dayN: 'Day {0}', titleFoot: '[[KeyW]][[KeyA]][[KeyS]][[KeyD]] / Arrows · [[KeyE]] interact · Space attack · Shift sprint',
     overwrite: 'Starting over will erase your current save. Are you sure?', cancel: 'Cancel', startOver: 'Start Over',
-    introTitle: 'Rock Bottom', letsGo: "Let's go!",
-    introStory: 'The factory closed. The rent went unpaid. All you have left is a leaky shelter in the Backstreets, a rickety workbench and $10.<br><br>But this city throws away a fortune every single day. Plastic, copper, old motors, circuit boards... <b>One person\'s trash is your survival.</b>',
-    howtoBody: '<b>🔍 Scavenge:</b> walk up to trash bags, dumpsters, wrecks and press <kbd>E</kbd> (✋ on mobile).<br>' +
+    howtoBody: '<b>🔍 Scavenge:</b> walk up to trash bags, dumpsters, wrecks and press <kbd>[[KeyE]]</kbd> (✋ on mobile).<br>' +
       '<b>💰 Sell:</b> Rusty the scrap dealer is across the street from your base. Prices change daily — watch for 🔥 hot items!<br>' +
       '<b>♻ Recycle:</b> build machines at your base (dashed blueprint spots). Raw scrap → refined materials worth much more. Machines keep working while you are out.<br>' +
       '<b>🔨 Craft:</b> tools unlock new loot (crowbar, wrench, bolt cutters, grinder) and new districts.<br>' +
       '<b>❤️ Survive:</b> keep Hunger 🍗, Thirst 💧 and Energy ⚡ up. Quick-use food <kbd>1</kbd> water <kbd>2</kbd> bandage <kbd>3</kbd> energy drink <kbd>4</kbd>.<br>' +
       '<b>🌙 Night:</b> stray dogs roam. Fight back with <kbd>Space</kbd> or sleep safely in your bed.<br>' +
-      '<b>⌨️ Keys:</b> <kbd>I</kbd> bag · <kbd>K</kbd> skills · <kbd>J</kbd> journal · <kbd>M</kbd> map · <kbd>Shift</kbd> sprint · <kbd>Esc</kbd> menu',
+      '<b>⌨️ Keys:</b> <kbd>[[KeyI]]</kbd> bag · <kbd>[[KeyK]]</kbd> skills · <kbd>[[KeyJ]]</kbd> journal · <kbd>[[KeyM]]</kbd> map · <kbd>Shift</kbd> sprint · <kbd>[[KeyP]]</kbd> menu',
     levelUp: 'Level {0}!', perkPoint: '+1 skill point — press K', whileAway: 'While you were away, your machines made:',
     contractDone: 'Contract complete! +{0}', gotSick: '🤢 You feel sick... Rest or take medicine.', noneInBag: 'None in your backpack.',
     crafted: 'Crafted!', built: 'Built!', machineUp: '{0} upgraded to level {1}!', goalDone: 'Life goal achieved!',
@@ -22,8 +20,7 @@ const STR = {
     dShort: 'd', hShort: 'h', gateOpened: 'A new district is open!', machinesMade: 'Overnight production:',
     weatherToday: 'Weather today: {0}', hotItem: 'Rusty is paying +50% for {0} today', barrelFilled: 'Rain barrel collected {0} water',
     gardenGrew: 'Your garden grew {0} veggies', plantIncome: 'Urban Scrap Co. income: {0}', lockHeld: 'Someone tried your gate last night. The lock held!',
-    thief: 'Thieves raided your stash overnight! Lost {0}× {1}. (Build a lock!)', newDay: 'Day {0}',
-    hintDogs: '🐕 Dog attack! Hit back with Space / 👊 or run to your base.', hintStarving: '🍗 You are starving! Eat something (press 1).',
+    thief: 'Thieves raided your stash overnight! Lost {0}× {1}. (Build a lock!)', newDay: 'Day {0}', hintStarving: '🍗 You are starving! Eat something (press 1).',
     hintThirsty: '💧 You are dehydrated! Drink (press 2) or find a fountain.', hintHungry: '🍗 Getting hungry... press 1 to eat.',
     hintThirst: '💧 Getting thirsty... press 2 to drink.', hintTired: '⚡ Exhausted. Sleep in your bed or drink an energy drink.',
     hintToxic: '☣️ Toxic air is hurting you! Craft a Respirator.', newArea: '🗺️ New area discovered: {0}',
@@ -66,22 +63,21 @@ const STR = {
     reviveAd: 'Watch an ad — keep your backpack', wakeUp: 'Wake up at base', wokeUp: 'You wake up at base. Lost your backpack and {0}.', keptBag: 'Lucky! You kept your backpack.',
     victoryTitle: 'Urban Scrap Co. is born!', victoryText: 'From a leaky shelter to your own recycling company in {0} days, earning {1} along the way. The city is cleaner — and so is your future.', keepPlaying: 'Keep playing', close: 'Close',
     adFail: 'No ad available right now. Try again later.', howtoTouch: '<b>📱 Touch:</b> drag on the left side to move · ✋ search / use · 👊 attack · 🏃 hold to sprint · tap the quick bar to eat and drink.',
+    kMove: 'Move', kAttack: 'Attack!', kRun: 'Hold to sprint', skipGuide: 'Skip guide', guide: 'Guide arrows', guideOffHint: 'Guide off. Turn it back on in the menu.', welcomeSub: 'Scavenge. Recycle. Survive.',
     newBlueprint: 'New blueprint: {0} — check your base!', dumpEvent: 'A truck illegally dumped a load of scrap in the {0}! Find the ★ on your map.', lgDump: 'Illegal dump',
     dailyTitle: 'Daily Bonus', dailyStreak: 'Login streak: {0} day(s)!', dailyText: 'Come back every day — the reward grows up to 7 days. Gifts were put in your stash.', claim: 'Claim',
   },
   tr: {
     subtitle: 'Kent Hurdacısı', tagline: 'Şehir her şeyi çöpe atıyor. Sen geri topluyorsun. Topla, geri dönüştür, üret ve tek başına hayatta kal — her seferinde bir çöp konteyneri.',
-    continue: 'Devam Et', newGame: 'Yeni Oyun', howTo: 'Nasıl Oynanır', dayN: '{0}. Gün', titleFoot: 'WASD / Oklar · E etkileşim · Boşluk saldırı · Shift koş',
+    continue: 'Devam Et', newGame: 'Yeni Oyun', howTo: 'Nasıl Oynanır', dayN: '{0}. Gün', titleFoot: '[[KeyW]][[KeyA]][[KeyS]][[KeyD]] / Oklar · [[KeyE]] etkileşim · Boşluk saldırı · Shift koş',
     overwrite: 'Baştan başlamak mevcut kaydını silecek. Emin misin?', cancel: 'Vazgeç', startOver: 'Baştan Başla',
-    introTitle: 'Dipteyiz', letsGo: 'Hadi başlayalım!',
-    introStory: 'Fabrika kapandı. Kira ödenmedi. Elinde kalan tek şey Arka Sokaklar\'da akan bir barınak, sallanan bir tezgah ve 10 dolar.<br><br>Ama bu şehir her gün bir servet çöpe atıyor. Plastik, bakır, eski motorlar, devre kartları... <b>Birinin çöpü senin hayatta kalma şansın.</b>',
-    howtoBody: '<b>🔍 Topla:</b> çöp poşetlerine, konteynerlere, enkazlara yaklaş ve <kbd>E</kbd>\'ye bas (mobilde ✋).<br>' +
+    howtoBody: '<b>🔍 Topla:</b> çöp poşetlerine, konteynerlere, enkazlara yaklaş ve <kbd>[[KeyE]]</kbd>\'ye bas (mobilde ✋).<br>' +
       '<b>💰 Sat:</b> Hurdacı Rıza üssünün tam karşısında. Fiyatlar her gün değişir — 🔥 popüler ürünleri kaçırma!<br>' +
       '<b>♻ Geri Dönüştür:</b> üssünde makineler kur (kesikli taslak yerleri). Ham hurda → çok daha değerli işlenmiş malzeme. Makineler sen dışarıdayken de çalışır.<br>' +
       '<b>🔨 Üret:</b> aletler yeni ganimetlerin ve yeni bölgelerin kilidini açar (levye, anahtar, cıvata makası, taşlama).<br>' +
       '<b>❤️ Hayatta Kal:</b> Tokluk 🍗, Su 💧 ve Enerji ⚡ düşmesin. Hızlı kullanım: yemek <kbd>1</kbd> su <kbd>2</kbd> bandaj <kbd>3</kbd> enerji içeceği <kbd>4</kbd>.<br>' +
       '<b>🌙 Gece:</b> sokak köpekleri dolaşır. <kbd>Boşluk</kbd> ile karşılık ver ya da yatağında güvenle uyu.<br>' +
-      '<b>⌨️ Tuşlar:</b> <kbd>I</kbd> çanta · <kbd>K</kbd> yetenekler · <kbd>J</kbd> günlük · <kbd>M</kbd> harita · <kbd>Shift</kbd> koş · <kbd>Esc</kbd> menü',
+      '<b>⌨️ Tuşlar:</b> <kbd>[[KeyI]]</kbd> çanta · <kbd>[[KeyK]]</kbd> yetenekler · <kbd>[[KeyJ]]</kbd> günlük · <kbd>[[KeyM]]</kbd> harita · <kbd>Shift</kbd> koş · <kbd>[[KeyP]]</kbd> menü',
     levelUp: 'Seviye {0}!', perkPoint: '+1 yetenek puanı — K tuşuna bas', whileAway: 'Sen yokken makinelerin üretti:',
     contractDone: 'Sözleşme tamamlandı! +{0}', gotSick: '🤢 Midem bulanıyor... Dinlen ya da ilaç al.', noneInBag: 'Çantanda yok.',
     crafted: 'Üretildi!', built: 'İnşa edildi!', machineUp: '{0} seviye {1}\'e yükseltildi!', goalDone: 'Hayat hedefi gerçekleşti!',
@@ -90,8 +86,7 @@ const STR = {
     dShort: 'g', hShort: 's', gateOpened: 'Yeni bir bölge açıldı!', machinesMade: 'Gece üretimi:',
     weatherToday: 'Bugün hava: {0}', hotItem: 'Rıza bugün {0} için +%50 ödüyor', barrelFilled: 'Yağmur varili {0} su topladı',
     gardenGrew: 'Bostanın {0} sebze verdi', plantIncome: 'Urban Scrap A.Ş. geliri: {0}', lockHeld: 'Dün gece biri kapını zorladı. Kilit dayandı!',
-    thief: 'Gece hırsızlar deponu yağmaladı! Kayıp: {0}× {1}. (Kilit yap!)', newDay: '{0}. Gün',
-    hintDogs: '🐕 Köpek saldırısı! Boşluk / 👊 ile vur ya da üsse kaç.', hintStarving: '🍗 Açlıktan ölüyorsun! Bir şey ye (1 tuşu).',
+    thief: 'Gece hırsızlar deponu yağmaladı! Kayıp: {0}× {1}. (Kilit yap!)', newDay: '{0}. Gün', hintStarving: '🍗 Açlıktan ölüyorsun! Bir şey ye (1 tuşu).',
     hintThirsty: '💧 Susuz kaldın! İç (2 tuşu) ya da bir çeşme bul.', hintHungry: '🍗 Acıkıyorsun... yemek için 1\'e bas.',
     hintThirst: '💧 Susadın... içmek için 2\'ye bas.', hintTired: '⚡ Bitkinsin. Yatağında uyu ya da enerji içeceği iç.',
     hintToxic: '☣️ Zehirli hava sana zarar veriyor! Gaz Maskesi yap.', newArea: '🗺️ Yeni bölge keşfedildi: {0}',
@@ -134,6 +129,7 @@ const STR = {
     reviveAd: 'Reklam izle — çantanı koru', wakeUp: 'Üste uyan', wokeUp: 'Üste uyandın. Çantanı ve {0} kaybettin.', keptBag: 'Şanslısın! Çantan yerinde.',
     victoryTitle: 'Urban Scrap A.Ş. doğdu!', victoryText: 'Akan bir barınaktan kendi geri dönüşüm şirketine {0} günde ulaştın ve yol boyunca {1} kazandın. Şehir artık daha temiz — geleceğin de.', keepPlaying: 'Oynamaya devam', close: 'Kapat',
     adFail: 'Şu an reklam yok. Daha sonra tekrar dene.', howtoTouch: '<b>📱 Dokunmatik:</b> hareket için sol tarafta sürükle · ✋ ara / kullan · 👊 saldır · 🏃 koşmak için basılı tut · yiyip içmek için hızlı çubuğa dokun.',
+    kMove: 'Hareket', kAttack: 'Saldır!', kRun: 'Koşmak için basılı tut', skipGuide: 'Rehberi geç', guide: 'Rehber okları', guideOffHint: 'Rehber kapandı. Menüden tekrar açabilirsin.', welcomeSub: 'Topla. Dönüştür. Hayatta kal.',
     newBlueprint: 'Yeni taslak: {0} — üssüne bak!', dumpEvent: 'Bir kamyon {0} bölgesine kaçak hurda döktü! Haritadaki ★ işaretini bul.', lgDump: 'Kaçak döküm',
     dailyTitle: 'Günlük Bonus', dailyStreak: 'Giriş serisi: {0} gün!', dailyText: 'Her gün geri gel — ödül 7 güne kadar büyür. Hediyeler depona konuldu.', claim: 'Al',
   },

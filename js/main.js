@@ -16,7 +16,8 @@
   const ld = document.getElementById('loading');
   if (ld) ld.remove();
   SDK.loadingStop();
-  UI.showTitle();
+  // returning players get the title (Continue); first-time players land straight in gameplay
+  if (save) UI.showTitle(); else UI.newGame();
   let last = performance.now();
   function loop(now) {
     const dt = Math.min(.05, Math.max(0, (now - last) / 1000));

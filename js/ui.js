@@ -56,7 +56,7 @@ const UI = {
           <button class="btn" data-a="howto">❔ ${t('howTo')}</button>
         </div>
       </div>
-      <div class="title-foot">${t('titleFoot')}</div>`;
+      <div class="title-foot">${keyText(t('titleFoot'))}</div>`;
     SDK.gameplayStop();
   },
   onStart() {
@@ -65,7 +65,7 @@ const UI = {
     $('touch').classList.toggle('hidden', !Input.isTouch);
     document.body.classList.toggle('touch', Input.isTouch);
     this.buildHud();
-    this.district(Game.curRegion);
+    this.district(Game.curRegion, true);
     SDK.gameplayStart();
   },
   buildHud() {
@@ -79,7 +79,7 @@ const UI = {
       <button class="mb" data-a="open" data-p="journal" title="J">📓<span>${t('mJournal')}</span></button>
       <button class="mb" data-a="open" data-p="map" title="M">🗺️<span>${t('mMap')}</span></button>
       <button class="mb hidden" id="phoneBtn" data-a="phone">📱<span>${t('mSell')}</span></button>
-      <button class="mb" data-a="open" data-p="settings" title="Esc">⚙️<span>${t('mMenu')}</span></button>`;
+      <button class="mb" data-a="open" data-p="settings" title="P">⚙️<span>${t('mMenu')}</span></button>`;
     this.hudT = 0;
   },
 
@@ -114,7 +114,7 @@ const UI = {
     let tr = '';
     if (S.quest < QUESTS.length) {
       const q = QUESTS[S.quest]; const [c, n] = q.c(S);
-      tr = `<div class="tq">📌 ${L(q.n)}${n > 1 ? ` <b>${Math.min(c, n)}/${n}</b>` : ''}</div>`;
+      tr = `<div class="tq">📌 ${L(q.n)}${n > 1 ? ` <b>${Math.min(c, n)}/${n}</b>` : ''}${S.quest < 6 && Guide.on() ? `<button class="skip" data-a="skipGuide">${t('skipGuide')} ✕</button>` : ''}</div>`;
     } else tr = `<div class="tq">🏆 ${t('allQuests')}</div>`;
     $('tracker').innerHTML = tr;
     // quick slots
@@ -126,6 +126,9 @@ const UI = {
       qs[i].querySelector('.qn').textContent = n || '';
       qs[i].classList.toggle('empty', !n);
     });
+    const pulse = Guide.quickPulse();
+    qs.forEach((el, i) => el.classList.toggle('pulse', i === pulse));
+    if (Input.isTouch) $('tAct').classList.toggle('ready', !!Game.target && !Game.action);
     const pb = $('perkBadge'); pb.classList.toggle('hidden', !S.perkPts); pb.textContent = S.perkPts;
     $('phoneBtn').classList.toggle('hidden', !S.goals.phone);
     this.miniT -= .12;
@@ -183,9 +186,10 @@ const UI = {
     el.innerHTML = `<div class="bn-t">${title}</div><div class="bn-s">${sub || ''}</div>`;
     el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   },
-  district(reg) {
+  district(reg, labelOnly) {
     const el = $('district'); const D = DISTRICTS[reg]; if (!D) return;
     el.innerHTML = `<span style="color:${D.col}">◆</span> ${L(D.n)}`;
+    if (labelOnly) return;
     const big = $('areaName');
     big.innerHTML = `<small>${t('entering')}</small>${L(D.n)}`; big.style.color = D.col;
     big.classList.remove('show'); void big.offsetWidth; big.classList.add('show');
@@ -209,10 +213,11 @@ const UI = {
     if (this.modalOpen) { if (e.code === 'Enter' || e.code === 'Space') { const b = $('modal').querySelector('.btn.primary'); if (b) b.click(); } return true; }
     if (Game.state !== 'play') return false;
     if (this.panel) {
-      if (e.code === 'Escape' || e.code === 'Tab' || (e.code === 'KeyI' && this.panel === 'inv') || (e.code === 'KeyM' && this.panel === 'map') || (e.code === 'KeyK' && this.panel === 'skills') || (e.code === 'KeyJ' && this.panel === 'journal') || (e.code === 'KeyE' && !e.repeat && this.panel !== 'settings')) { this.closePanel(); return true; }
+      if (e.code === 'Escape' || e.code === 'Tab' || (e.code === 'KeyI' && this.panel === 'inv') || (e.code === 'KeyM' && this.panel === 'map') || (e.code === 'KeyK' && this.panel === 'skills') || (e.code === 'KeyJ' && this.panel === 'journal') || (e.code === 'KeyP' && this.panel === 'settings') || (e.code === 'KeyE' && !e.repeat && this.panel !== 'settings')) { this.closePanel(); return true; }
       return true;
     }
-    const map = { KeyI: 'inv', Tab: 'inv', KeyK: 'skills', KeyJ: 'journal', KeyM: 'map', Escape: 'settings' };
+    // P opens the menu (Esc also works, but in fullscreen the browser uses Esc to leave fullscreen)
+    const map = { KeyI: 'inv', Tab: 'inv', KeyK: 'skills', KeyJ: 'journal', KeyM: 'map', KeyP: 'settings', Escape: 'settings' };
     if (map[e.code] && !e.repeat) { this.openPanel(map[e.code]); return true; }
     return false;
   },
@@ -495,6 +500,7 @@ const UI = {
         <button class="btn" data-a="toggleSfx">${Sfx.sfxOn ? '🔊' : '🔈'} ${t('sfx')}: ${Sfx.sfxOn ? t('on') : t('off')}</button>
         <button class="btn" data-a="toggleMusic">${Sfx.musicOn ? '🎵' : '🔇'} ${t('music')}: ${Sfx.musicOn ? t('on') : t('off')}</button>
         <button class="btn" data-a="lang">🌐 ${LANG === 'tr' ? 'English' : 'Türkçe'}</button>
+        <button class="btn" data-a="toggleGuide">🧭 ${t('guide')}: ${S.flags.noGuide ? t('off') : t('on')}</button>
         <button class="btn" data-a="saveNow">💾 ${t('saveNow')}</button>
         <button class="btn" data-a="howto">❔ ${t('howTo')}</button>
         <button class="btn" data-a="toTitle">🏠 ${t('mainMenu')}</button>
@@ -507,7 +513,7 @@ const UI = {
     return { title: `🚐 ${t('vanTravel')}`, body: `<p class="note">${t('vanNote')}</p><div class="acts col">${dests.map(([id, n]) => `<button class="btn" data-a="travel" data-k="${id}">${n}</button>`).join('')}</div>` };
   },
   howtoHtml() {
-    return `<div class="howto">${t('howtoBody')}${Input.isTouch ? '<br>' + t('howtoTouch') : ''}</div>`;
+    return `<div class="howto">${keyText(t('howtoBody'))}${Input.isTouch ? '<br>' + t('howtoTouch') : ''}</div>`;
   },
 
   // ---------- actions ----------
@@ -548,6 +554,8 @@ const UI = {
       case 'perk': perkUp(d.k); break;
       case 'goal': fundGoal(d.k); break;
       case 'travel': this.closePanel(); fastTravel(d.k); return;
+      case 'skipGuide': S.flags.noGuide = 1; Guide.target = null; this.toast(t('guideOffHint'), 'info'); return;
+      case 'toggleGuide': S.flags.noGuide = S.flags.noGuide ? 0 : 1; Guide.t = 0; break;
       case 'toggleSfx': Sfx.setSfx(!Sfx.sfxOn); savePrefs(); break;
       case 'toggleMusic': Sfx.setMusic(!Sfx.musicOn); savePrefs(); break;
       case 'lang': LANG = LANG === 'tr' ? 'en' : 'tr'; savePrefs(); applyLang(); if (Game.state === 'title') { this.showTitle(); return; } this.buildHud(); this.district(Game.curRegion); break;
@@ -558,9 +566,9 @@ const UI = {
       case 'continue': { const s = loadSave(); if (s) startGame(s); return; }
       case 'newgame':
         if (loadSave()) { this.modal(`<h2>⚠️ ${t('newGame')}</h2><p>${t('overwrite')}</p><div class="acts"><button class="btn" data-a="modalClose">${t('cancel')}</button><button class="btn primary" data-a="reallyNew">${t('startOver')}</button></div>`); return; }
-        this.intro(); return;
-      case 'reallyNew': this.modalClose(); SDK.remove(SAVE_KEY); this.intro(); return;
-      case 'beginGame': this.modalClose(); startGame(newState()); saveGame(); return;
+        this.newGame(); return;
+      case 'reallyNew': this.modalClose(); SDK.remove(SAVE_KEY); this.newGame(); return;
+      case 'beginGame': this.modalClose(); this.newGame(); return;
       case 'modalClose': this.modalClose(); return;
       case 'wake': {
         this.modalClose(); SDK.gameplayStop();
@@ -587,8 +595,10 @@ const UI = {
     $('modal').classList.add('hidden'); this.modalOpen = false; Input.clear();
     if (Game.state === 'play' && !this.panel && !Game.dead) SDK.gameplayStart();
   },
-  intro() {
-    this.modal(`<h2>♻ ${t('introTitle')}</h2><div class="story">${t('introStory')}</div>${this.howtoHtml()}<div class="acts"><button class="btn big primary" data-a="beginGame">${t('letsGo')}</button></div>`);
+  // New players land directly in gameplay; onboarding happens in the world (Guide)
+  newGame() {
+    startGame(newState()); saveGame();
+    this.banner('♻ URBAN SCRAP', t('welcomeSub'));
   },
   sleepReport(full, lines, newDay) {
     SDK.gameplayStop();
@@ -604,8 +614,8 @@ const UI = {
     SDK.gameplayStop();
     const canAd = S.reviveUsed !== day();
     this.modal(`<h2>💀 ${t('passedOut')}</h2><p>${t('deathText')}</p>
-      <div class="acts col">${canAd ? `<button class="btn big ad" data-a="reviveAd">🎬 ${t('reviveAd')}</button>` : ''}
-      <button class="btn big ${canAd ? '' : 'primary'}" data-a="wake">🛏️ ${t('wakeUp')}</button></div>`);
+      <div class="acts col"><button class="btn primary" data-a="wake">🛏️ ${t('wakeUp')}</button>
+      ${canAd ? `<button class="btn ad" data-a="reviveAd">🎬 ${t('reviveAd')}</button>` : ''}</div>`);
   },
   dailyBonus(streak, cash, gifts) {
     const dots = Array.from({ length: 7 }, (_, i) => `<i class="${i < Math.min(streak, 7) ? 'on' : ''}">${i + 1}</i>`).join('');
@@ -619,6 +629,8 @@ const UI = {
     this.modal(`<h2>♻️ ${t('victoryTitle')}</h2><div class="bigmsg">🏭</div><p>${t('victoryText', day(), fmtMoney(S.stats.earned || 0))}</p><div class="acts"><button class="btn big primary" data-a="modalClose">${t('keepPlaying')}</button></div>`);
   },
 };
+// Replace [[KeyX]] tokens with the label of that physical key in the player's layout
+function keyText(s) { return s.replace(/\[\[(\w+)\]\]/g, (_, c) => keyLabel(c)); }
 function catSort(a, b) {
   const o = { raw: 0, ref: 1, food: 2, med: 3 };
   return (o[ITEMS[a].c] - o[ITEMS[b].c]) || (ITEMS[b].p - ITEMS[a].p);
