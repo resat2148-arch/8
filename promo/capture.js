@@ -28,7 +28,7 @@ window.__setup = function (lang) {
   S.yields.garden = 5; S.yields.rainbarrel = 6;
   S.flags.gate_east = 1; S.flags.gate_west = 1; World.gateOpen.east = true; World.gateOpen.west = true;
   World.chunkCache.clear(); buildMapCanvas();
-  S.quest = 19; S.visited = { center: true, north: true, east: true, south: true, west: true };
+  S.quest = QUESTS.findIndex(q => q.id === 'atm'); S.visited = { center: true, north: true, east: true, south: true, west: true };
   for (let i = 0; i < 48 * 48; i++) Game.explored[i] = 1;
   S.inv = { copper: 14, scrap: 12, ewaste: 6, plastic: 18 };
   S.stash = { steel: 18, alu: 9, pellets: 26, cuingot: 7, components: 4 };
@@ -40,6 +40,7 @@ window.__zoom = function (z, cs) { R.zoom = z; R.chunkScale = cs; World.chunkCac
 const setTime = h => { S.totalMin = Math.floor(S.totalMin / 1440) * 1440 + Math.round(h * 60); };
 const place = (x, y, face) => { const p = Game.player; p.x = x; p.y = y; p.face = face; R.cam.x = x; R.cam.y = y; R.cartPos = null; };
 const reset = () => {
+  R.clean = false;
   Input.keys = {}; Input.pressed = {}; Game.action = null; Game.dogs = []; Game.particles = []; Game.floaters = [];
   S.nodes = {}; S.p.hp = maxHp(); Game.paused = false; Game.hurtT = 0;
   document.getElementById('toasts').innerHTML = ''; document.getElementById('areaName').classList.remove('show');
@@ -56,8 +57,9 @@ const nearestNode = (type, x, y, reg) => {
 const makeDog = (x, y) => {
   const tier = DISTRICTS[regionAt(Math.floor(x / TS), Math.floor(y / TS))].tier;
   const d = { x, y, face: Math.PI, hp: 36 + tier * 8, max: 36 + tier * 8, state: 'chase', t: 0, bite: .6, wx: 0, wy: 0, walkT: 0, kb: { x: 0, y: 0 }, col: '#8a6a4a' };
-  Game.dogs.push(d); return d;
+  d.hp = d.max = 110; Game.dogs.push(d); return d;
 };
+const setRegion = r => { Game.curRegion = r; document.getElementById('district').innerHTML = '<span style="color:' + DISTRICTS[r].col + '">◆</span> ' + L(DISTRICTS[r].n); };
 const fastSearch = need => { if (Game.action) Game.action.need = need; };
 window.__shots = {
   // 1. scavenging a dumpster in the Backstreets
@@ -70,7 +72,7 @@ window.__shots = {
   },
   // 2. base at dusk: machines running, collecting smelted steel
   base(i) {
-    if (i === 0) { reset(); setTime(19.15); place(93.2 * TS, 107.4 * TS, Math.PI); Input.keys = { KeyA: true }; for (const k in S.machines) { S.machines[k].out = {}; S.machines[k].q = 3; S.machines[k].prog = Math.random() * 5; } }
+    if (i === 0) { reset(); R.clean = true; setTime(19.15); place(93.2 * TS, 107.4 * TS, Math.PI); Input.keys = { KeyA: true }; for (const k in S.machines) { S.machines[k].out = {}; S.machines[k].q = 3; S.machines[k].prog = Math.random() * 5; } }
     if (i === 52) Input.keys = {};
     if (i === 58) { S.machines.smelter.out = { steel: 12 }; S.machines.stripper.out = { cuingot: 6 }; collectMachine('smelter'); }
     if (i === 70) collectMachine('stripper');
@@ -91,17 +93,19 @@ window.__shots = {
   // 4. night in the industrial zone, fending off a stray dog with the headlamp on
   night(i) {
     if (i === 0) {
-      reset(); setTime(23.4); place(137 * TS, 97.5 * TS, 0);
-      makeDog(Game.player.x + 250, Game.player.y - 8);
+      // under a working street lamp so the fight is readable at night
+      reset(); setTime(22.2); place(132.2 * TS, 98.4 * TS, 0); setRegion('east');
+      for (const l of World.lights) if (Math.abs(l.x - 131 * TS) < 40 && Math.abs(l.y - 99 * TS) < 40) l.broken = false;
+      makeDog(Game.player.x + 170, Game.player.y - 10).col = '#b89a6a';
     }
-    if (i === 34) { const d = makeDog(Game.player.x + 270, Game.player.y + 30); d.col = '#5a4a3a'; }
+    if (i === 30) makeDog(Game.player.x + 190, Game.player.y + 26).col = '#9a8a7a';
     const p = Game.player;
-    for (const d of Game.dogs) if (d.state === 'chase' && Math.hypot(d.x - p.x, d.y - p.y) < 60 && i % 9 === 0) { p.face = Math.atan2(d.y - p.y, d.x - p.x); Input.press('attack'); }
+    for (const d of Game.dogs) if (d.state === 'chase' && Math.hypot(d.x - p.x, d.y - p.y) < 60 && i % 13 === 0) { p.face = Math.atan2(d.y - p.y, d.x - p.x); Input.press('attack'); }
     S.p.hp = Math.max(S.p.hp, 70);
   },
   // 5. E-Waste Dump with a respirator, finding a collectible
   ewaste(i) {
-    if (i === 0) { reset(); setTime(13.2); const n = nearestNode('heap', 97 * TS, 140 * TS, 'south'); place(n.x, n.y + 24, -Math.PI / 2); }
+    if (i === 0) { reset(); setTime(13.2); const n = nearestNode('heap', 97 * TS, 140 * TS, 'south'); place(n.x, n.y + 24, -Math.PI / 2); setRegion('south'); }
     if (i === 6) Input.press('interact');
     if (i === 8) fastSearch(1.5);
     if (i === 56) { S.collection.cartridge = 1; Sfx.play('rare'); UI.collectible('cartridge'); }
