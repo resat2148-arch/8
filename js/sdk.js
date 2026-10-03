@@ -11,8 +11,25 @@ const SDK = {
         this.ready = true;
         this.env = this.api.environment || 'unknown';
         if (this.env === 'disabled') this.ready = false;
+        if (this.ready) {
+          // platform-wide mute setting takes priority over in-game audio toggles
+          const g = this.api.game;
+          if (g.settings) Sfx.setPlatformMute(!!g.settings.muteAudio);
+          if (g.addSettingsChangeListener) g.addSettingsChangeListener(s => Sfx.setPlatformMute(!!(s && s.muteAudio)));
+        }
       }
     } catch (e) { this.ready = false; }
+  },
+  onPlatform() { return /(^|\.)crazygames\./.test(location.hostname); },
+  // Language from the SDK's locale info (required by CrazyGames), null if unknown
+  platformLang() {
+    if (!this.ready) return null;
+    try {
+      const si = this.api.user && this.api.user.systemInfo;
+      if (!si) return null;
+      const loc = String(si.locale || '').toLowerCase(), cc = String(si.countryCode || '').toUpperCase();
+      return loc.startsWith('tr') || (!loc && cc === 'TR') ? 'tr' : 'en';
+    } catch (e) { return null; }
   },
   call(fn) { if (!this.ready) return; try { fn(this.api); } catch (e) { /* ignore */ } },
   loadingStart() { this.call(a => a.game.loadingStart()); },
@@ -38,7 +55,9 @@ const SDK = {
   },
   // onDone(granted:boolean)
   rewarded(onDone) {
-    if (!this.ready) { onDone(true); return; } // offline / local build: grant for free
+    // Outside CrazyGames (local build / other hosts) grant for free; on CrazyGames without a working SDK
+    // (e.g. an ad blocker) there is no ad, so there is no reward either.
+    if (!this.ready) { onDone(!this.onPlatform()); return; }
     this._ad('rewarded', ok => onDone(ok));
   },
 

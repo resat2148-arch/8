@@ -36,7 +36,8 @@ const R = {
     const g = this.g, z = this.zoom;
     if (!World.tiles) { g.fillStyle = '#15161a'; g.fillRect(0, 0, this.cv.width, this.cv.height); return; }
     // camera
-    if (Game.state === 'play' && Game.player) {
+    if (this.camLock) { /* camera framed manually (promo captures) */ }
+    else if (Game.state === 'play' && Game.player) {
       const k = 1 - Math.pow(.0008, dt);
       this.cam.x = lerp(this.cam.x, Game.player.x, k); this.cam.y = lerp(this.cam.y, Game.player.y, k);
       if (Math.abs(this.cam.x - Game.player.x) > 600 || Math.abs(this.cam.y - Game.player.y) > 600) { this.cam.x = Game.player.x; this.cam.y = Game.player.y; }
@@ -240,7 +241,7 @@ const R = {
     }
   },
   drawTarget(g, t) {
-    const tg = Game.target; if (!tg) return;
+    const tg = Game.target; if (!tg || R.clean) return;
     const pulse = 1 + Math.sin(t * 6) * .08;
     g.strokeStyle = 'rgba(255,215,100,.75)'; g.lineWidth = 2; g.setLineDash([5, 4]);
     g.beginPath(); g.ellipse(tg.x, tg.y + 2, 22 * pulse, 11 * pulse, 0, 0, TAU); g.stroke(); g.setLineDash([]);
@@ -523,7 +524,7 @@ function drawMachine(g, key, x, y, t) {
   }
   if (on) { g.fillStyle = Math.sin(t * 8) > 0 ? '#7dff7a' : '#2f7d2f'; g.fillRect(10, -4, 3, 3); }
   g.restore();
-  if (!m) return;
+  if (!m || R.clean) return;
   // progress bar & output bubble
   const r = BUILDS[key].m[m.sel];
   if (m.q > 0) {

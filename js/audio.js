@@ -2,7 +2,7 @@
 // ---------- Synthesized audio (no asset files) ----------
 const Sfx = {
   ctx: null, master: null, sfx: null, music: null, noiseBuf: null,
-  sfxOn: true, musicOn: true, muted: false, rainNode: null, musicTimer: null, step: 0,
+  sfxOn: true, musicOn: true, muted: false, platformMute: false, rainNode: null, musicTimer: null, step: 0,
 
   init() {
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
@@ -19,7 +19,8 @@ const Sfx = {
     this.startMusic();
     this.applyMute();
   },
-  applyMute() { if (this.master) this.master.gain.value = this.muted ? 0 : 1; },
+  applyMute() { if (this.master) this.master.gain.value = (this.muted || this.platformMute) ? 0 : 1; },
+  setPlatformMute(m) { this.platformMute = m; this.applyMute(); },
   setMuted(m) { this.muted = m; this.applyMute(); },
   setSfx(on) { this.sfxOn = on; if (this.sfx) this.sfx.gain.value = on ? .55 : 0; },
   setMusic(on) { this.musicOn = on; if (this.music) this.music.gain.value = on ? .22 : 0; },

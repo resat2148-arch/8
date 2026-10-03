@@ -8,6 +8,9 @@
   UI.init();
   await SDK.init();
   SDK.loadingStart();
+  // CrazyGames requires the language to follow the SDK locale (fallback English) unless the player picked one
+  let hasPref = false; try { hasPref = !!localStorage.getItem(PREF_KEY); } catch (e) { }
+  if (!hasPref) { const pl = SDK.platformLang(); if (pl) { LANG = pl; applyLang(); } }
   const save = loadSave();
   genWorld(save ? save.seed : ((Math.random() * 1e9) | 0));
   const ld = document.getElementById('loading');

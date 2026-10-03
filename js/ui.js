@@ -507,7 +507,7 @@ const UI = {
     return { title: `🚐 ${t('vanTravel')}`, body: `<p class="note">${t('vanNote')}</p><div class="acts col">${dests.map(([id, n]) => `<button class="btn" data-a="travel" data-k="${id}">${n}</button>`).join('')}</div>` };
   },
   howtoHtml() {
-    return `<div class="howto">${t('howtoBody')}</div>`;
+    return `<div class="howto">${t('howtoBody')}${Input.isTouch ? '<br>' + t('howtoTouch') : ''}</div>`;
   },
 
   // ---------- actions ----------
@@ -541,7 +541,7 @@ const UI = {
         break;
       }
       case 'adBoost':
-        SDK.rewarded(ok => { if (ok) { S.adBoost = true; S.adBoostDay = day(); this.toast(t('boostActive'), 'good'); } this.render(); });
+        SDK.rewarded(ok => { if (ok) { S.adBoost = true; S.adBoostDay = day(); this.toast(t('boostActive'), 'good'); } else this.toast(t('adFail'), 'bad'); this.render(); });
         return;
       case 'deliver': deliverContract(+d.i); break;
       case 'buy': if (!buyItem(d.k, n)) { Sfx.play('deny'); this.toast(t('noMoney'), 'bad'); } else Sfx.play('cash'); break;
@@ -562,9 +562,16 @@ const UI = {
       case 'reallyNew': this.modalClose(); SDK.remove(SAVE_KEY); this.intro(); return;
       case 'beginGame': this.modalClose(); startGame(newState()); saveGame(); return;
       case 'modalClose': this.modalClose(); return;
-      case 'wake': { this.modalClose(); UI.fade(); const lost = respawn(false); this.toast(t('wokeUp', fmtMoney(lost)), 'bad'); SDK.gameplayStart(); return; }
+      case 'wake': {
+        this.modalClose(); SDK.gameplayStop();
+        const lost = respawn(false);
+        // passing out is a natural break: offer a midgame ad before play resumes
+        Game.paused = true;
+        SDK.midgame(() => { Game.paused = false; UI.fade(); this.toast(t('wokeUp', fmtMoney(lost)), 'bad'); SDK.gameplayStart(); });
+        return;
+      }
       case 'reviveAd':
-        SDK.rewarded(ok => { this.modalClose(); UI.fade(); if (ok) { S.reviveUsed = day(); respawn(true); this.toast(t('keptBag'), 'good'); } else { const lost = respawn(false); this.toast(t('wokeUp', fmtMoney(lost)), 'bad'); } SDK.gameplayStart(); });
+        SDK.rewarded(ok => { this.modalClose(); UI.fade(); if (ok) { S.reviveUsed = day(); respawn(true); this.toast(t('keptBag'), 'good'); } else { const lost = respawn(false); this.toast(t('adFail') + ' ' + t('wokeUp', fmtMoney(lost)), 'bad'); } SDK.gameplayStart(); });
         return;
       case 'startDay': this.modalClose(); SDK.gameplayStart(); return;
     }
@@ -573,18 +580,24 @@ const UI = {
 
   // ---------- modals ----------
   modal(html) {
+    SDK.gameplayStop();
     const m = $('modal'); m.innerHTML = `<div class="mbox">${html}</div>`; m.classList.remove('hidden'); this.modalOpen = true;
   },
-  modalClose() { $('modal').classList.add('hidden'); this.modalOpen = false; Input.clear(); },
+  modalClose() {
+    $('modal').classList.add('hidden'); this.modalOpen = false; Input.clear();
+    if (Game.state === 'play' && !this.panel && !Game.dead) SDK.gameplayStart();
+  },
   intro() {
     this.modal(`<h2>♻ ${t('introTitle')}</h2><div class="story">${t('introStory')}</div>${this.howtoHtml()}<div class="acts"><button class="btn big primary" data-a="beginGame">${t('letsGo')}</button></div>`);
   },
   sleepReport(full, lines, newDay) {
     SDK.gameplayStop();
-    const show = () => this.modal(`<h2>${full ? '🌅 ' + t('dayN', day()) : '😴 ' + t('napDone')}</h2>
+    Game.paused = true;
+    const show = () => { Game.paused = false; this.modal(`<h2>${full ? '🌅 ' + t('dayN', day()) : '😴 ' + t('napDone')}</h2>
       <div class="report">${lines.length ? lines.map(l => `<div>${l}</div>`).join('') : `<div>${t('quietNight')}</div>`}</div>
-      <div class="acts"><button class="btn big primary" data-a="startDay">${full ? t('startDay') : t('continue')}</button></div>`);
-    if (full) { this.sleepCount++; if (this.sleepCount % 2 === 0) { SDK.midgame(show); return; } }
+      <div class="acts"><button class="btn big primary" data-a="startDay">${full ? t('startDay') : t('continue')}</button></div>`); };
+    // a full night's sleep is the game's natural break for a midgame ad (the SDK paces frequency)
+    if (full) { SDK.midgame(show); return; }
     show();
   },
   death() {
